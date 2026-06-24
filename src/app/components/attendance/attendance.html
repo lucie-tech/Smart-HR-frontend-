@@ -1,0 +1,65 @@
+<div class="page-header animate-fade-in">
+  <h2>My Attendance</h2>
+  <div class="actions">
+    <button class="btn btn-success" (click)="markAttendance('PRESENT')">
+      <span class="material-icons">fingerprint</span> Check In
+    </button>
+  </div>
+</div>
+
+<div class="month-selector card animate-fade-in">
+  <button class="btn-icon" (click)="prevMonth()">
+    <span class="material-icons">chevron_left</span>
+  </button>
+  <h3 class="current-month">{{ monthNames[currentMonth - 1] }} {{ currentYear }}</h3>
+  <button class="btn-icon" (click)="nextMonth()">
+    <span class="material-icons">chevron_right</span>
+  </button>
+</div>
+
+<div class="summary-cards animate-fade-in" *ngIf="summary && !loading">
+  <div class="stat-card">
+    <div class="stat-icon bg-success-light text-success">
+      <span class="material-icons">check_circle</span>
+    </div>
+    <div class="stat-details">
+      <p class="stat-label">Days Present</p>
+      <h3 class="stat-value">{{ summary.daysPresent }}</h3>
+    </div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-icon bg-danger-light text-danger">
+      <span class="material-icons">cancel</span>
+    </div>
+    <div class="stat-details">
+      <p class="stat-label">Days Absent</p>
+      <h3 class="stat-value">{{ summary.daysAbsent }}</h3>
+    </div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-icon bg-warning-light text-warning">
+      <span class="material-icons">flight</span>
+    </div>
+    <div class="stat-details">
+      <p class="stat-label">Days On Leave</p>
+      <h3 class="stat-value">{{ summary.daysOnLeave }}</h3>
+    </div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-icon bg-primary-light text-primary">
+      <span class="material-icons">date_range</span>
+    </div>
+    <div class="stat-details">
+      <p class="stat-label">Total Recorded</p>
+      <h3 class="stat-value">{{ summary.totalRecordedDays }}</h3>
+    </div>
+  </div>
+</div>
+
+<div class="loading-state" *ngIf="loading">
+  <span class="material-icons spinner">refresh</span>
+  <p>Loading attendance data...</p>
+</div>

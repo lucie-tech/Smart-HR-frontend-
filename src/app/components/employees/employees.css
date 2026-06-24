@@ -1,0 +1,92 @@
+.header-subtitle {
+  font-size: 0.875rem;
+  color: var(--gray-500);
+  margin-top: 2px;
+}
+
+.search-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0.875rem 1.25rem;
+  margin-bottom: 1.5rem;
+}
+
+.search-icon {
+  color: var(--gray-400);
+  font-size: 1.25rem;
+  flex-shrink: 0;
+}
+
+.search-input {
+  border: none;
+  outline: none;
+  width: 100%;
+  font-size: 0.95rem;
+  color: var(--gray-800);
+  background: transparent;
+}
+
+.employee-cell {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.emp-name {
+  font-weight: 500;
+  color: var(--gray-900);
+}
+
+.mono {
+  font-family: monospace;
+  font-size: 0.85rem;
+  color: var(--gray-600);
+}
+
+.status-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-right: 6px;
+}
+.status-dot.active { background: #10b981; }
+.status-dot.inactive { background: var(--gray-300); }
+
+/* Role badges */
+.badge-admin    { background: #fde8e8; color: #c81e1e; }
+.badge-hr       { background: #e0f2fe; color: #0369a1; }
+.badge-manager  { background: #fef9c3; color: #854d0e; }
+.badge-recruiter{ background: #f3e8ff; color: #7e22ce; }
+.badge-employee { background: var(--gray-100); color: var(--gray-700); }
+
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 3rem;
+  color: var(--gray-500);
+}
+
+.loading-state .spinner {
+  font-size: 2rem;
+  color: var(--primary);
+  margin-bottom: 1rem;
+  animation: spin 1s linear infinite;
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 3rem 1.5rem;
+  text-align: center;
+  color: var(--gray-500);
+}
+
+.p-4 { padding: 1.5rem; }
+
+@keyframes spin {
+  100% { transform: rotate(360deg); }
+}

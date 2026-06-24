@@ -1,0 +1,91 @@
+<div class="dashboard-layout" [class.sidebar-collapsed]="isSidebarCollapsed">
+  
+  <!-- Sidebar -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="logo-area" *ngIf="!isSidebarCollapsed">
+        <span class="material-icons logo-icon">groups</span>
+        <h2>Smart-HR</h2>
+      </div>
+      <div class="logo-area collapsed-logo" *ngIf="isSidebarCollapsed">
+        <span class="material-icons logo-icon">groups</span>
+      </div>
+    </div>
+
+    <div class="user-profile-mini" *ngIf="currentUser && !isSidebarCollapsed">
+      <div class="avatar">
+        {{ currentUser.fullName.charAt(0) }}
+      </div>
+      <div class="user-info">
+        <p class="name">{{ currentUser.fullName }}</p>
+        <p class="role">{{ currentUser.role.replace('ROLE_', '').replace('_', ' ') }}</p>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      <ul>
+        <li>
+          <a routerLink="announcements" routerLinkActive="active">
+            <span class="material-icons">campaign</span>
+            <span class="nav-text" *ngIf="!isSidebarCollapsed">Announcements</span>
+          </a>
+        </li>
+        <li>
+          <a routerLink="attendance" routerLinkActive="active">
+            <span class="material-icons">event_available</span>
+            <span class="nav-text" *ngIf="!isSidebarCollapsed">Attendance</span>
+          </a>
+        </li>
+        <li>
+          <a routerLink="leaves" routerLinkActive="active">
+            <span class="material-icons">flight_takeoff</span>
+            <span class="nav-text" *ngIf="!isSidebarCollapsed">Leaves</span>
+          </a>
+        </li>
+        <li>
+          <a routerLink="profile" routerLinkActive="active">
+            <span class="material-icons">person</span>
+            <span class="nav-text" *ngIf="!isSidebarCollapsed">My Profile</span>
+          </a>
+        </li>
+        <!-- Admin / HR only -->
+        <li *ngIf="isAdmin">
+          <a routerLink="employees" routerLinkActive="active">
+            <span class="material-icons">group</span>
+            <span class="nav-text" *ngIf="!isSidebarCollapsed">Employees</span>
+          </a>
+        </li>
+      </ul>
+    </nav>
+  </aside>
+
+  <!-- Main Content -->
+  <div class="main-wrapper">
+    <!-- Topbar -->
+    <header class="topbar">
+      <div class="topbar-left">
+        <button class="btn-icon" (click)="toggleSidebar()">
+          <span class="material-icons">menu</span>
+        </button>
+        <h2 class="page-title">Dashboard</h2>
+      </div>
+      
+      <div class="topbar-right">
+        <button class="btn-icon">
+          <span class="material-icons">notifications</span>
+        </button>
+        <div class="user-menu">
+          <button class="btn btn-outline" (click)="logout()">
+            <span class="material-icons">logout</span>
+            Logout
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Content Area -->
+    <main class="content-area">
+      <router-outlet></router-outlet>
+    </main>
+  </div>
+</div>

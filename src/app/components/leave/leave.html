@@ -1,0 +1,87 @@
+<div class="page-header animate-fade-in">
+  <h2>Leave Management</h2>
+  <button class="btn btn-primary" (click)="toggleForm()">
+    <span class="material-icons">{{ showForm ? 'close' : 'add' }}</span>
+    {{ showForm ? 'Cancel Application' : 'Apply for Leave' }}
+  </button>
+</div>
+
+<!-- Leave Application Form -->
+<div class="card p-4 mb-4 animate-fade-in" *ngIf="showForm">
+  <h3 class="form-title">Apply for Leave</h3>
+  <form [formGroup]="leaveForm" (ngSubmit)="onSubmit()">
+    <div class="form-row">
+      <div class="form-group flex-1">
+        <label>Leave Type</label>
+        <select formControlName="type" class="form-control">
+          <option value="ANNUAL">Annual Leave</option>
+          <option value="SICK">Sick Leave</option>
+          <option value="UNPAID">Unpaid Leave</option>
+        </select>
+      </div>
+    </div>
+    
+    <div class="form-row">
+      <div class="form-group flex-1">
+        <label>Start Date</label>
+        <input type="date" formControlName="startDate" class="form-control" />
+      </div>
+      <div class="form-group flex-1">
+        <label>End Date</label>
+        <input type="date" formControlName="endDate" class="form-control" />
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Reason</label>
+      <textarea formControlName="reason" class="form-control" placeholder="Please provide details..."></textarea>
+    </div>
+
+    <button type="submit" class="btn btn-primary" [disabled]="leaveForm.invalid || submitting">
+      <span *ngIf="submitting" class="spinner material-icons">autorenew</span>
+      <span *ngIf="!submitting">Submit Application</span>
+    </button>
+  </form>
+</div>
+
+<!-- History Table -->
+<div class="card table-container animate-fade-in">
+  <div class="p-4 border-b">
+    <h3 class="form-title">My Leave History</h3>
+  </div>
+  
+  <div class="loading-state" *ngIf="loading">
+    <span class="material-icons spinner">refresh</span>
+    <p>Loading history...</p>
+  </div>
+
+  <table *ngIf="!loading && leaves.length > 0">
+    <thead>
+      <tr>
+        <th>Type</th>
+        <th>Start Date</th>
+        <th>End Date</th>
+        <th>Applied On</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let leave of leaves">
+        <td><strong>{{ leave.type }}</strong></td>
+        <td>{{ leave.startDate | date }}</td>
+        <td>{{ leave.endDate | date }}</td>
+        <td>{{ leave.appliedAt | date:'short' }}</td>
+        <td>
+          <span class="badge" [ngClass]="getStatusClass(leave.status)">
+            {{ leave.status }}
+          </span>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="empty-state p-4" *ngIf="!loading && leaves.length === 0">
+    <span class="material-icons text-gray-300" style="font-size: 3rem;">flight_takeoff</span>
+    <p>You haven't applied for any leaves yet.</p>
+  </div>
+</div>

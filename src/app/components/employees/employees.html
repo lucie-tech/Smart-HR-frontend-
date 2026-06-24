@@ -1,0 +1,68 @@
+<div class="page-header animate-fade-in">
+  <div>
+    <h2>All Employees</h2>
+    <p class="header-subtitle" *ngIf="!loading">{{ filtered.length }} of {{ employees.length }} employees</p>
+  </div>
+</div>
+
+<!-- Search bar -->
+<div class="search-bar card animate-fade-in">
+  <span class="material-icons search-icon">search</span>
+  <input
+    type="text"
+    class="search-input"
+    placeholder="Search by name, email, ID, or role..."
+    (input)="onSearch($event)"
+  />
+</div>
+
+<!-- Loading -->
+<div class="loading-state" *ngIf="loading">
+  <span class="material-icons spinner">refresh</span>
+  <p>Loading employees...</p>
+</div>
+
+<!-- Table -->
+<div class="card table-container animate-fade-in" *ngIf="!loading">
+  <table *ngIf="filtered.length > 0">
+    <thead>
+      <tr>
+        <th>Employee</th>
+        <th>ID</th>
+        <th>Email</th>
+        <th>Job Title</th>
+        <th>Role</th>
+        <th>Status</th>
+        <th>Joined</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let emp of filtered">
+        <td>
+          <div class="employee-cell">
+            <div class="avatar-small">{{ emp.fullName?.charAt(0) || '?' }}</div>
+            <span class="emp-name">{{ emp.fullName }}</span>
+          </div>
+        </td>
+        <td class="mono">{{ emp.employeeId }}</td>
+        <td>{{ emp.email }}</td>
+        <td>{{ emp.jobTitle || '—' }}</td>
+        <td>
+          <span class="badge" [ngClass]="getRoleBadgeClass(emp.role)">
+            {{ getRoleLabel(emp.role) }}
+          </span>
+        </td>
+        <td>
+          <span class="status-dot" [class.active]="emp.active" [class.inactive]="!emp.active"></span>
+          {{ emp.active ? 'Active' : 'Inactive' }}
+        </td>
+        <td>{{ emp.dateOfHire | date:'mediumDate' }}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="empty-state p-4" *ngIf="filtered.length === 0 && !loading">
+    <span class="material-icons" style="font-size: 3rem; color: var(--gray-300);">group_off</span>
+    <p>No employees found for "{{ searchTerm }}"</p>
+  </div>
+</div>

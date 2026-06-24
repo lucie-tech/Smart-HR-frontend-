@@ -1,0 +1,65 @@
+<div class="page-header animate-fade-in">
+  <div>
+    <h2>Company Announcements</h2>
+    <p class="header-subtitle" *ngIf="!loading">{{ totalElements }} announcement{{ totalElements !== 1 ? 's' : '' }}</p>
+  </div>
+  <!-- Only admins / managers see this button -->
+  <button class="btn btn-primary" routerLink="create" *ngIf="canCreate">
+    <span class="material-icons">add</span>
+    New Announcement
+  </button>
+</div>
+
+<!-- Loading -->
+<div class="loading-state" *ngIf="loading">
+  <span class="material-icons spinner">refresh</span>
+  <p>Loading announcements...</p>
+</div>
+
+<!-- Cards grid -->
+<div class="announcements-grid" *ngIf="!loading && announcements.length > 0">
+  <div class="card announcement-card animate-fade-in" *ngFor="let ann of announcements">
+    <div class="card-header">
+      <div class="author-info">
+        <div class="avatar-small">
+          {{ ann.author?.fullName?.charAt(0) || 'A' }}
+        </div>
+        <div>
+          <h4 class="author-name">{{ ann.author?.fullName || 'Admin' }}</h4>
+          <span class="post-date">{{ ann.datePosted | date:'mediumDate' }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="card-body">
+      <h3 class="announcement-title">{{ ann.title }}</h3>
+      <p class="announcement-content">{{ ann.content }}</p>
+    </div>
+  </div>
+</div>
+
+<!-- Empty state -->
+<div class="empty-state card animate-fade-in" *ngIf="!loading && announcements.length === 0">
+  <span class="material-icons">campaign</span>
+  <h3>No Announcements Yet</h3>
+  <p>Check back later for important company updates.</p>
+</div>
+
+<!-- Pagination controls -->
+<div class="pagination animate-fade-in" *ngIf="!loading && totalPages > 1">
+  <button class="btn-icon page-btn" (click)="prevPage()" [disabled]="isFirst">
+    <span class="material-icons">chevron_left</span>
+  </button>
+
+  <button
+    *ngFor="let p of pages"
+    class="page-number"
+    [class.active]="p === currentPage"
+    (click)="goToPage(p)">
+    {{ p + 1 }}
+  </button>
+
+  <button class="btn-icon page-btn" (click)="nextPage()" [disabled]="isLast">
+    <span class="material-icons">chevron_right</span>
+  </button>
+</div>

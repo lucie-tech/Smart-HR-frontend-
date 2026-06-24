@@ -1,0 +1,31 @@
+.header-content {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.back-btn {
+  background: white;
+  border: 1px solid var(--gray-200);
+  box-shadow: var(--shadow-sm);
+}
+
+.form-card {
+  max-width: 800px;
+}
+
+.p-4 { padding: 1.5rem; }
+.mt-1 { margin-top: 0.25rem; }
+.mt-4 { margin-top: 1.5rem; }
+.text-danger { color: var(--danger); }
+.text-sm { font-size: 0.875rem; }
+.flex { display: flex; }
+.gap-3 { gap: 1rem; }
+
+.spinner {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  100% { transform: rotate(360deg); }
+}

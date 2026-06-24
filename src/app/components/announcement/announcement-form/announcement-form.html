@@ -1,0 +1,36 @@
+<div class="page-header animate-fade-in">
+  <div class="header-content">
+    <button class="btn-icon back-btn" routerLink="/dashboard/announcements">
+      <span class="material-icons">arrow_back</span>
+    </button>
+    <h2>Create Announcement</h2>
+  </div>
+</div>
+
+<div class="card p-4 form-card animate-fade-in">
+  <form [formGroup]="announcementForm" (ngSubmit)="onSubmit()">
+    <div class="form-group">
+      <label>Title</label>
+      <input type="text" formControlName="title" class="form-control" placeholder="E.g., Quarterly All-Hands Meeting" />
+      <div *ngIf="announcementForm.get('title')?.touched && announcementForm.get('title')?.invalid" class="invalid-feedback text-danger text-sm mt-1">
+        Title is required.
+      </div>
+    </div>
+    
+    <div class="form-group">
+      <label>Content</label>
+      <textarea formControlName="content" class="form-control" rows="8" placeholder="Provide details about the announcement..."></textarea>
+      <div *ngIf="announcementForm.get('content')?.touched && announcementForm.get('content')?.invalid" class="invalid-feedback text-danger text-sm mt-1">
+        Content is required.
+      </div>
+    </div>
+
+    <div class="form-actions mt-4 flex gap-3">
+      <button type="button" class="btn btn-outline" routerLink="/dashboard/announcements">Cancel</button>
+      <button type="submit" class="btn btn-primary" [disabled]="announcementForm.invalid || submitting">
+        <span *ngIf="submitting" class="spinner material-icons">autorenew</span>
+        <span *ngIf="!submitting">Publish Announcement</span>
+      </button>
+    </div>
+  </form>
+</div>

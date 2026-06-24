@@ -1,0 +1,104 @@
+<div class="signup-page animate-fade-in">
+  <div class="signup-wrapper">
+    <!-- Left side: Branding -->
+    <div class="signup-branding">
+      <div class="branding-content">
+        <div class="logo-area">
+          <span class="material-icons logo-icon">groups</span>
+          <h1>Smart-HR</h1>
+        </div>
+        <h2>Join the Team.</h2>
+        <p>Create an account to access the company portal, manage attendance, and stay updated.</p>
+      </div>
+      <div class="circle circle-1"></div>
+      <div class="circle circle-2"></div>
+    </div>
+
+    <!-- Right side: Form -->
+    <div class="signup-form-container">
+      <div class="form-wrapper">
+        <div class="mobile-logo">
+          <span class="material-icons logo-icon">groups</span>
+          <h2>Smart-HR</h2>
+        </div>
+        
+        <h3 class="form-title">Create Account</h3>
+        <p class="form-subtitle">Fill in the details below to register.</p>
+
+        <div *ngIf="error" class="alert alert-danger animate-fade-in">
+          <span class="material-icons">error_outline</span>
+          {{error}}
+        </div>
+
+        <div *ngIf="success" class="alert alert-success animate-fade-in">
+          <span class="material-icons">check_circle</span>
+          {{success}}
+        </div>
+
+        <form [formGroup]="signupForm" (ngSubmit)="onSubmit()">
+          <div class="form-row">
+            <div class="form-group flex-1">
+              <label for="employeeId">Employee ID</label>
+              <div class="input-with-icon">
+                <span class="material-icons input-icon">tag</span>
+                <input type="text" id="employeeId" formControlName="employeeId" class="form-control" placeholder="EMP-001" 
+                  [ngClass]="{ 'is-invalid': submitted && f['employeeId'].errors }" />
+              </div>
+              <div *ngIf="submitted && f['employeeId'].errors" class="invalid-feedback">
+                <div *ngIf="f['employeeId'].errors['required']">ID is required</div>
+              </div>
+            </div>
+
+            <div class="form-group flex-1">
+              <label for="fullName">Full Name</label>
+              <div class="input-with-icon">
+                <span class="material-icons input-icon">person</span>
+                <input type="text" id="fullName" formControlName="fullName" class="form-control" placeholder="John Doe" 
+                  [ngClass]="{ 'is-invalid': submitted && f['fullName'].errors }" />
+              </div>
+              <div *ngIf="submitted && f['fullName'].errors" class="invalid-feedback">
+                <div *ngIf="f['fullName'].errors['required']">Name is required</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="email">Email Address</label>
+            <div class="input-with-icon">
+              <span class="material-icons input-icon">email</span>
+              <input type="email" id="email" formControlName="email" class="form-control" placeholder="name@company.com" 
+                [ngClass]="{ 'is-invalid': submitted && f['email'].errors }" />
+            </div>
+            <div *ngIf="submitted && f['email'].errors" class="invalid-feedback">
+              <div *ngIf="f['email'].errors['required']">Email is required</div>
+              <div *ngIf="f['email'].errors['email']">Must be valid email</div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="password">Password</label>
+            <div class="input-with-icon">
+              <span class="material-icons input-icon">lock</span>
+              <input type="password" id="password" formControlName="password" class="form-control" placeholder="••••••••" 
+                [ngClass]="{ 'is-invalid': submitted && f['password'].errors }" />
+            </div>
+            <div *ngIf="submitted && f['password'].errors" class="invalid-feedback">
+              <div *ngIf="f['password'].errors['required']">Password is required</div>
+              <div *ngIf="f['password'].errors['minlength']">Min 6 characters</div>
+            </div>
+          </div>
+
+          <button [disabled]="loading" class="btn btn-primary btn-block btn-submit mt-2">
+            <span *ngIf="loading" class="spinner material-icons">autorenew</span>
+            <span *ngIf="!loading">Create Account</span>
+          </button>
+
+          <div class="login-link text-center mt-3">
+            <span class="text-gray-500">Already have an account?</span> 
+            <a routerLink="/login" class="text-primary font-medium">Log in here</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

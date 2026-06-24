@@ -1,0 +1,80 @@
+<div class="login-page animate-fade-in">
+  <div class="login-wrapper">
+    <!-- Left side: Branding/Image -->
+    <div class="login-branding">
+      <div class="branding-content">
+        <div class="logo-area">
+          <span class="material-icons logo-icon">groups</span>
+          <h1>Smart-HR</h1>
+        </div>
+        <h2>Empowering Your Workforce.</h2>
+        <p>Manage employees, track attendance, and handle leaves with our comprehensive, state-of-the-art HR platform.</p>
+      </div>
+      <!-- Decorative background elements -->
+      <div class="circle circle-1"></div>
+      <div class="circle circle-2"></div>
+    </div>
+
+    <!-- Right side: Form -->
+    <div class="login-form-container">
+      <div class="form-wrapper">
+        <div class="mobile-logo">
+          <span class="material-icons logo-icon">groups</span>
+          <h2>Smart-HR</h2>
+        </div>
+        
+        <h3 class="form-title">Welcome Back</h3>
+        <p class="form-subtitle">Please enter your credentials to access your account.</p>
+
+        <div *ngIf="error" class="alert alert-danger animate-fade-in">
+          <span class="material-icons">error_outline</span>
+          {{error}}
+        </div>
+
+        <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+          <div class="form-group">
+            <label for="email">Email Address</label>
+            <div class="input-with-icon">
+              <span class="material-icons input-icon">email</span>
+              <input type="email" id="email" formControlName="email" class="form-control" placeholder="name@company.com" 
+                [ngClass]="{ 'is-invalid': submitted && f['email'].errors }" />
+            </div>
+            <div *ngIf="submitted && f['email'].errors" class="invalid-feedback">
+              <div *ngIf="f['email'].errors['required']">Email is required</div>
+              <div *ngIf="f['email'].errors['email']">Must be a valid email address</div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="password">Password</label>
+            <div class="input-with-icon">
+              <span class="material-icons input-icon">lock</span>
+              <input type="password" id="password" formControlName="password" class="form-control" placeholder="••••••••" 
+                [ngClass]="{ 'is-invalid': submitted && f['password'].errors }" />
+            </div>
+            <div *ngIf="submitted && f['password'].errors" class="invalid-feedback">
+              <div *ngIf="f['password'].errors['required']">Password is required</div>
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <label class="remember-me">
+              <input type="checkbox"> Remember me
+            </label>
+            <a href="#" class="forgot-password">Forgot password?</a>
+          </div>
+
+          <button [disabled]="loading" class="btn btn-primary btn-block btn-submit">
+            <span *ngIf="loading" class="spinner material-icons">autorenew</span>
+            <span *ngIf="!loading">Sign In</span>
+          </button>
+
+          <div class="text-center" style="margin-top: 1.5rem; font-size: 0.9rem;">
+            <span style="color: var(--gray-500)">Don't have an account?</span> 
+            <a routerLink="/signup" style="color: var(--primary); font-weight: 500; margin-left: 4px;">Sign up here</a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

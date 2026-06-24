@@ -1,0 +1,111 @@
+<div class="page-header animate-fade-in">
+  <h2>My Profile</h2>
+</div>
+
+<div class="loading-state" *ngIf="loading">
+  <span class="material-icons spinner">refresh</span>
+</div>
+
+<div *ngIf="errorMessage && !loading" class="alert alert-danger animate-fade-in">
+  <span class="material-icons">error</span>
+  {{ errorMessage }}
+</div>
+
+<div class="profile-layout animate-fade-in" *ngIf="!loading && currentUser">
+  <!-- Left Side: Avatar Card -->
+  <div class="card profile-card">
+    <!-- Photo or Initial -->
+    <div class="avatar-wrapper">
+      <div class="avatar-large" *ngIf="!photoPreview">
+        {{ getInitial() }}
+      </div>
+      <img *ngIf="photoPreview" [src]="photoPreview" alt="Profile Photo" class="avatar-photo" />
+      <div class="photo-overlay" (click)="photoInput.click()">
+        <span class="material-icons">camera_alt</span>
+      </div>
+      <input
+        #photoInput
+        type="file"
+        accept="image/*"
+        hidden
+        (change)="onPhotoSelected($event)"
+      />
+    </div>
+    <div class="upload-hint" *ngIf="uploadingPhoto">
+      <span class="material-icons spinner small-spinner">autorenew</span> Uploading…
+    </div>
+
+    <h3 class="profile-name">{{ currentUser.fullName }}</h3>
+    <p class="profile-role">{{ currentUser.role?.replace('ROLE_', '')?.replace('_', ' ') }}</p>
+
+    <div class="profile-meta">
+      <div class="meta-item">
+        <span class="material-icons">badge</span>
+        <span>ID: {{ currentUser.employeeId }}</span>
+      </div>
+      <div class="meta-item">
+        <span class="material-icons">email</span>
+        <span>{{ currentUser.email }}</span>
+      </div>
+      <div class="meta-item" *ngIf="currentUser.jobTitle">
+        <span class="material-icons">work</span>
+        <span>{{ currentUser.jobTitle }}</span>
+      </div>
+      <div class="meta-item">
+        <span class="material-icons">event</span>
+        <span>Joined: {{ currentUser.dateOfHire | date }}</span>
+      </div>
+      <div class="meta-item" *ngIf="currentUser.contactInfo">
+        <span class="material-icons">phone</span>
+        <span>{{ currentUser.contactInfo }}</span>
+      </div>
+    </div>
+
+    <!-- Leave Balances -->
+    <div class="leave-balances" *ngIf="currentUser.annualLeaveBalance !== undefined">
+      <h4 class="balance-title">Leave Balances</h4>
+      <div class="balance-row">
+        <span>Annual</span>
+        <span class="balance-value">{{ currentUser.annualLeaveBalance }} days</span>
+      </div>
+      <div class="balance-row">
+        <span>Sick</span>
+        <span class="balance-value">{{ currentUser.sickLeaveBalance }} days</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right Side: Edit Form -->
+  <div class="card edit-card">
+    <div class="card-header">
+      <h3>Edit Personal Information</h3>
+    </div>
+    <div class="card-body">
+      <div *ngIf="successMessage" class="alert alert-success animate-fade-in">
+        <span class="material-icons">check_circle</span>
+        {{ successMessage }}
+      </div>
+      <div *ngIf="errorMessage" class="alert alert-danger animate-fade-in">
+        <span class="material-icons">error</span>
+        {{ errorMessage }}
+      </div>
+
+      <form [formGroup]="profileForm" (ngSubmit)="onSubmit()">
+        <div class="form-group">
+          <label>Full Name</label>
+          <input type="text" formControlName="fullName" class="form-control" />
+        </div>
+
+        <div class="form-group">
+          <label>Contact Info (Phone, Address, etc.)</label>
+          <textarea formControlName="contactInfo" class="form-control" rows="3"></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-primary" [disabled]="profileForm.invalid || saving">
+          <span *ngIf="saving" class="spinner material-icons">autorenew</span>
+          <span *ngIf="!saving">Save Changes</span>
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
