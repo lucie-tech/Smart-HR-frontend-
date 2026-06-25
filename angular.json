@@ -58,7 +58,16 @@
           "builder": "@angular/build:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "smarthr-frontend:build:production"
+"optimization": {
+  "scripts": true,
+  "styles": {
+    "minify": true,
+    "inlineCritical": true
+  },
+  "fonts": {
+    "inline": false
+  }
+},              "buildTarget": "smarthr-frontend:build:production"
             },
             "development": {
               "buildTarget": "smarthr-frontend:build:development"
