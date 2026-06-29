@@ -17,10 +17,8 @@ export class ProfileComponent implements OnInit {
   currentUser: User | null = null;
   loading = true;
   saving = false;
-  uploadingPhoto = false;
   successMessage = '';
   errorMessage = '';
-  photoPreview: string | null = null;
 
   constructor(
     private employeeService: EmployeeService,
@@ -46,9 +44,6 @@ export class ProfileComponent implements OnInit {
           fullName: user.fullName,
           contactInfo: user.contactInfo ?? ''
         });
-        if (user.profilePhotoUrl) {
-          this.photoPreview = user.profilePhotoUrl;
-        }
         this.loading = false;
       },
       error: (err) => {
@@ -67,11 +62,11 @@ export class ProfileComponent implements OnInit {
     this.errorMessage = '';
 
     this.employeeService.updateMyProfile(this.profileForm.value).subscribe({
-      next: (updated) => {
+      next: (updated: User) => {
         this.saving = false;
         this.successMessage = 'Profile updated successfully!';
         if (this.currentUser) {
-          this.currentUser = { ...this.currentUser, ...this.profileForm.value };
+          this.currentUser = { ...this.currentUser, fullName: updated.fullName ?? this.currentUser.fullName, contactInfo: updated.contactInfo ?? this.currentUser.contactInfo };
         }
         setTimeout(() => (this.successMessage = ''), 3500);
       },
@@ -82,33 +77,7 @@ export class ProfileComponent implements OnInit {
     });
   }
 
-  onPhotoSelected(event: Event) {
-    const input = event.target as HTMLInputElement;
-    if (!input.files?.length) return;
-    const file = input.files[0];
 
-    // Preview instantly
-    const reader = new FileReader();
-    reader.onload = () => (this.photoPreview = reader.result as string);
-    reader.readAsDataURL(file);
-
-    this.uploadingPhoto = true;
-    this.employeeService.uploadPhoto(file).subscribe({
-      next: (res: any) => {
-        this.uploadingPhoto = false;
-        this.successMessage = 'Photo uploaded!';
-        if (this.currentUser && res?.profilePhotoUrl) {
-          this.currentUser.profilePhotoUrl = res.profilePhotoUrl;
-          this.photoPreview = res.profilePhotoUrl;
-        }
-        setTimeout(() => (this.successMessage = ''), 3500);
-      },
-      error: () => {
-        this.uploadingPhoto = false;
-        this.errorMessage = 'Photo upload failed. Please try again.';
-      }
-    });
-  }
 
   getInitial(): string {
     return this.currentUser?.fullName?.charAt(0)?.toUpperCase() || '?';

@@ -1,3 +1,4 @@
+<!-- Header -->
 <div class="page-header animate-fade-in">
   <div>
     <h2>All Employees</h2>
@@ -34,13 +35,14 @@
         <th>Role</th>
         <th>Status</th>
         <th>Joined</th>
+        <th>Actions</th>
       </tr>
     </thead>
     <tbody>
       <tr *ngFor="let emp of filtered">
         <td>
           <div class="employee-cell">
-            <div class="avatar-small">{{ emp.fullName?.charAt(0) || '?' }}</div>
+            <div class="avatar-small">{{ emp.fullName.charAt(0) }}</div>
             <span class="emp-name">{{ emp.fullName }}</span>
           </div>
         </td>
@@ -57,6 +59,16 @@
           {{ emp.active ? 'Active' : 'Inactive' }}
         </td>
         <td>{{ emp.dateOfHire | date:'mediumDate' }}</td>
+        <td>
+          <div class="row-actions">
+            <button class="btn-row edit" (click)="openEdit(emp)" title="Edit employee">
+              <span class="material-icons">edit</span>
+            </button>
+            <button class="btn-row delete" (click)="deleteEmployee(emp)" title="Delete employee">
+              <span class="material-icons">delete</span>
+            </button>
+          </div>
+        </td>
       </tr>
     </tbody>
   </table>
@@ -64,5 +76,93 @@
   <div class="empty-state p-4" *ngIf="filtered.length === 0 && !loading">
     <span class="material-icons" style="font-size: 3rem; color: var(--gray-300);">group_off</span>
     <p>No employees found for "{{ searchTerm }}"</p>
+  </div>
+</div>
+
+<!-- Edit Modal Overlay -->
+<div class="modal-overlay animate-fade-in" *ngIf="editingEmployee" (click)="closeEdit()">
+  <div class="modal-card" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <div class="modal-avatar">{{ editingEmployee.fullName.charAt(0) }}</div>
+      <div>
+        <h3>Edit Employee</h3>
+        <p class="modal-sub">{{ editingEmployee.employeeId }}</p>
+      </div>
+      <button class="btn-icon modal-close" (click)="closeEdit()">
+        <span class="material-icons">close</span>
+      </button>
+    </div>
+
+    <!-- Alerts -->
+    <div *ngIf="successMessage" class="alert alert-success animate-fade-in">
+      <span class="material-icons">check_circle</span> {{ successMessage }}
+    </div>
+    <div *ngIf="errorMessage" class="alert alert-danger animate-fade-in">
+      <span class="material-icons">error</span> {{ errorMessage }}
+    </div>
+
+    <!-- Edit Form -->
+    <form [formGroup]="editForm" (ngSubmit)="saveEdit()" class="modal-body">
+      <div class="form-row-2">
+        <div class="form-group">
+          <label>Full Name</label>
+          <input type="text" formControlName="fullName" class="form-control" />
+        </div>
+        <div class="form-group">
+          <label>Email</label>
+          <input type="email" formControlName="email" class="form-control" />
+        </div>
+      </div>
+      <div class="form-row-2">
+        <div class="form-group">
+          <label>Job Title</label>
+          <input type="text" formControlName="jobTitle" class="form-control" placeholder="e.g. Software Engineer" />
+        </div>
+        <div class="form-group">
+          <label>Employment Status</label>
+          <select formControlName="employmentStatus" class="form-control">
+            <option value="">— Select —</option>
+            <option value="ACTIVE">Active</option>
+            <option value="INACTIVE">Inactive</option>
+            <option value="ON_LEAVE">On Leave</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Contact Info</label>
+        <input type="text" formControlName="contactInfo" class="form-control" placeholder="Phone or address" />
+      </div>
+      <button type="submit" class="btn btn-primary" [disabled]="editForm.invalid || saving">
+        <span *ngIf="saving" class="spinner material-icons">autorenew</span>
+        <span *ngIf="!saving">Save Changes</span>
+      </button>
+    </form>
+
+    <!-- Password Section -->
+    <div class="modal-divider"></div>
+    <div class="modal-body">
+      <div class="password-toggle" (click)="showPasswordForm = !showPasswordForm">
+        <span class="material-icons">lock</span>
+        <span>{{ showPasswordForm ? 'Hide' : 'Change Password' }}</span>
+        <span class="material-icons chevron" [class.rotated]="showPasswordForm">expand_more</span>
+      </div>
+
+      <form *ngIf="showPasswordForm" [formGroup]="passwordForm" (ngSubmit)="savePassword()" class="password-form animate-fade-in">
+        <div class="form-row-2">
+          <div class="form-group">
+            <label>New Password</label>
+            <input type="password" formControlName="password" class="form-control" placeholder="Min. 6 characters" />
+          </div>
+          <div class="form-group">
+            <label>Confirm Password</label>
+            <input type="password" formControlName="confirm" class="form-control" placeholder="Repeat password" />
+          </div>
+        </div>
+        <button type="submit" class="btn btn-warning" [disabled]="passwordForm.invalid || savingPassword">
+          <span *ngIf="savingPassword" class="spinner material-icons">autorenew</span>
+          <span *ngIf="!savingPassword">Update Password</span>
+        </button>
+      </form>
+    </div>
   </div>
 </div>

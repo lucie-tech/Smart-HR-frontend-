@@ -14,29 +14,14 @@
 <div class="profile-layout animate-fade-in" *ngIf="!loading && currentUser">
   <!-- Left Side: Avatar Card -->
   <div class="card profile-card">
-    <!-- Photo or Initial -->
     <div class="avatar-wrapper">
-      <div class="avatar-large" *ngIf="!photoPreview">
+      <div class="avatar-large">
         {{ getInitial() }}
       </div>
-      <img *ngIf="photoPreview" [src]="photoPreview" alt="Profile Photo" class="avatar-photo" />
-      <div class="photo-overlay" (click)="photoInput.click()">
-        <span class="material-icons">camera_alt</span>
-      </div>
-      <input
-        #photoInput
-        type="file"
-        accept="image/*"
-        hidden
-        (change)="onPhotoSelected($event)"
-      />
-    </div>
-    <div class="upload-hint" *ngIf="uploadingPhoto">
-      <span class="material-icons spinner small-spinner">autorenew</span> Uploading…
     </div>
 
     <h3 class="profile-name">{{ currentUser.fullName }}</h3>
-    <p class="profile-role">{{ currentUser.role?.replace('ROLE_', '')?.replace('_', ' ') }}</p>
+    <p class="profile-role">{{ currentUser.role.replace('ROLE_', '').replace('_', ' ') }}</p>
 
     <div class="profile-meta">
       <div class="meta-item">
@@ -61,18 +46,7 @@
       </div>
     </div>
 
-    <!-- Leave Balances -->
-    <div class="leave-balances" *ngIf="currentUser.annualLeaveBalance !== undefined">
-      <h4 class="balance-title">Leave Balances</h4>
-      <div class="balance-row">
-        <span>Annual</span>
-        <span class="balance-value">{{ currentUser.annualLeaveBalance }} days</span>
-      </div>
-      <div class="balance-row">
-        <span>Sick</span>
-        <span class="balance-value">{{ currentUser.sickLeaveBalance }} days</span>
-      </div>
-    </div>
+
   </div>
 
   <!-- Right Side: Edit Form -->

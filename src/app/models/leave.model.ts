@@ -1,14 +1,13 @@
-import { User } from './employee.model';
-
 export interface LeaveRequest {
   id?: number;
-  employee?: User;
-  type: string;     // ANNUAL | SICK | UNPAID
+  type: string;
   startDate: string;
   endDate: string;
   reason?: string;
-  status?: string;  // PENDING | APPROVED | REJECTED
+  status?: string;
   appliedAt?: string;
   processedAt?: string;
-  processedBy?: User;
+  employeeName?: string;
+  employeeId?: string;
+  processedByName?: string;
 }

@@ -44,6 +44,11 @@ export class EmployeeService {
     return this.http.put(`${this.baseUrl}/${id}`, data);
   }
 
+  /** PUT /api/employees/:id/password — admin/HR */
+  updateEmployeePassword(id: number, password: string): Observable<any> {
+    return this.http.put(`${this.baseUrl}/${id}/password`, { password });
+  }
+
   /** DELETE /api/employees/:id — admin/HR */
   deleteEmployee(id: number): Observable<any> {
     return this.http.delete(`${this.baseUrl}/${id}`);
