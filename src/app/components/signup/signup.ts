@@ -30,7 +30,6 @@ export class Signup implements OnInit {
 
   ngOnInit() {
     this.signupForm = this.formBuilder.group({
-      employeeId: ['', Validators.required],
       fullName: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
       password: ['', [Validators.required, Validators.minLength(6)]]
@@ -50,8 +49,8 @@ export class Signup implements OnInit {
 
     this.loading = true;
     this.authService.signup(this.signupForm.value).subscribe({
-      next: (response) => {
-        this.success = 'Registration successful! You can now log in.';
+      next: (response: any) => {
+        this.success = response.message || 'Registration successful! You can now log in.';
         this.loading = false;
         this.signupForm.reset();
         this.submitted = false;

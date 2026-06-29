@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { AnnouncementService, AnnouncementPage } from '../../../services/announcement';
 import { AuthService } from '../../../services/auth';
 import { Announcement } from '../../../models/announcement.model';
@@ -8,7 +9,7 @@ import { Announcement } from '../../../models/announcement.model';
 @Component({
   selector: 'app-announcement-list',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, ReactiveFormsModule],
   templateUrl: './announcement-list.html',
   styleUrls: ['./announcement-list.css']
 })
@@ -27,14 +28,24 @@ export class AnnouncementListComponent implements OnInit {
   // Role-based
   canCreate = false;
 
+  // Edit Modal State
+  editingAnnouncement: Announcement | null = null;
+  editForm!: FormGroup;
+  saving = false;
+
   constructor(
     private announcementService: AnnouncementService,
-    private authService: AuthService
+    private authService: AuthService,
+    private fb: FormBuilder
   ) {}
 
   ngOnInit() {
     this.canCreate = this.authService.isManager();
     this.loadAnnouncements();
+    this.editForm = this.fb.group({
+      title: ['', Validators.required],
+      content: ['', Validators.required]
+    });
   }
 
   loadAnnouncements(page = 0) {
@@ -57,15 +68,11 @@ export class AnnouncementListComponent implements OnInit {
   }
 
   prevPage() {
-    if (!this.isFirst) {
-      this.loadAnnouncements(this.currentPage - 1);
-    }
+    if (!this.isFirst) this.loadAnnouncements(this.currentPage - 1);
   }
 
   nextPage() {
-    if (!this.isLast) {
-      this.loadAnnouncements(this.currentPage + 1);
-    }
+    if (!this.isLast) this.loadAnnouncements(this.currentPage + 1);
   }
 
   goToPage(page: number) {
@@ -74,5 +81,45 @@ export class AnnouncementListComponent implements OnInit {
 
   get pages(): number[] {
     return Array.from({ length: this.totalPages }, (_, i) => i);
+  }
+
+  // Edit/Delete functionality
+  deleteAnnouncement(id?: number) {
+    if (!id || !confirm('Are you sure you want to delete this announcement?')) return;
+    this.announcementService.delete(id).subscribe({
+      next: () => {
+        this.loadAnnouncements(this.currentPage);
+      },
+      error: (err) => alert('Failed to delete announcement: ' + (err.error?.message || 'Unknown error'))
+    });
+  }
+
+  openEdit(ann: Announcement) {
+    this.editingAnnouncement = ann;
+    this.editForm.patchValue({
+      title: ann.title,
+      content: ann.content
+    });
+  }
+
+  closeEdit() {
+    this.editingAnnouncement = null;
+    this.editForm.reset();
+  }
+
+  saveEdit() {
+    if (this.editForm.invalid || !this.editingAnnouncement?.id) return;
+    this.saving = true;
+    this.announcementService.update(this.editingAnnouncement.id, this.editForm.value).subscribe({
+      next: () => {
+        this.saving = false;
+        this.closeEdit();
+        this.loadAnnouncements(this.currentPage);
+      },
+      error: (err) => {
+        this.saving = false;
+        alert('Failed to update announcement: ' + (err.error?.message || 'Unknown error'));
+      }
+    });
   }
 }

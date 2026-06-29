@@ -29,6 +29,15 @@
           <span class="post-date">{{ ann.datePosted | date:'mediumDate' }}</span>
         </div>
       </div>
+      <!-- Actions for admins -->
+      <div class="card-actions" *ngIf="canCreate">
+        <button class="btn-icon text-primary" (click)="openEdit(ann)" title="Edit">
+          <span class="material-icons">edit</span>
+        </button>
+        <button class="btn-icon text-danger" (click)="deleteAnnouncement(ann.id)" title="Delete">
+          <span class="material-icons">delete</span>
+        </button>
+      </div>
     </div>
 
     <div class="card-body">
@@ -62,4 +71,31 @@
   <button class="btn-icon page-btn" (click)="nextPage()" [disabled]="isLast">
     <span class="material-icons">chevron_right</span>
   </button>
+</div>
+
+<!-- Edit Modal Overlay -->
+<div class="modal-overlay animate-fade-in" *ngIf="editingAnnouncement" (click)="closeEdit()">
+  <div class="modal-card" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3>Edit Announcement</h3>
+      <button class="btn-icon modal-close" (click)="closeEdit()">
+        <span class="material-icons">close</span>
+      </button>
+    </div>
+
+    <form [formGroup]="editForm" (ngSubmit)="saveEdit()" class="modal-body">
+      <div class="form-group">
+        <label>Title</label>
+        <input type="text" formControlName="title" class="form-control" />
+      </div>
+      <div class="form-group">
+        <label>Content</label>
+        <textarea formControlName="content" class="form-control" rows="5"></textarea>
+      </div>
+      <button type="submit" class="btn btn-primary" [disabled]="editForm.invalid || saving">
+        <span *ngIf="saving" class="spinner material-icons">autorenew</span>
+        <span *ngIf="!saving">Save Changes</span>
+      </button>
+    </form>
+  </div>
 </div>
