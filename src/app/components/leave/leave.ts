@@ -15,12 +15,16 @@ import { LeaveRequest } from '../../models/leave.model';
 export class LeaveComponent implements OnInit {
   leaves: LeaveRequest[] = [];
   leaveForm!: FormGroup;
+  editLeaveForm!: FormGroup;
   loading = false;
   submitting = false;
   showForm = false;
   processing: number | null = null;
   successMessage = '';
   errorMessage = '';
+
+  selectedLeave: LeaveRequest | null = null;
+  isEditing = false;
 
   constructor(
     private leaveService: LeaveService,
@@ -39,6 +43,13 @@ export class LeaveComponent implements OnInit {
 
   initForm() {
     this.leaveForm = this.formBuilder.group({
+      type: ['ANNUAL', Validators.required],
+      startDate: ['', Validators.required],
+      endDate: ['', Validators.required],
+      reason: ['', Validators.required]
+    });
+
+    this.editLeaveForm = this.formBuilder.group({
       type: ['ANNUAL', Validators.required],
       startDate: ['', Validators.required],
       endDate: ['', Validators.required],
@@ -94,6 +105,73 @@ export class LeaveComponent implements OnInit {
         this.loadLeaves();
       },
       error: () => { this.processing = null; }
+    });
+  }
+
+  openDetails(leave: LeaveRequest) {
+    this.selectedLeave = leave;
+    this.isEditing = false;
+  }
+
+  closeDetails() {
+    this.selectedLeave = null;
+    this.isEditing = false;
+  }
+
+  startEdit() {
+    if (!this.selectedLeave) return;
+    this.isEditing = true;
+    this.editLeaveForm.patchValue({
+      type: this.selectedLeave.type,
+      startDate: this.selectedLeave.startDate,
+      endDate: this.selectedLeave.endDate,
+      reason: this.selectedLeave.reason || ''
+    });
+  }
+
+  cancelEdit() {
+    this.isEditing = false;
+  }
+
+  saveEdit() {
+    if (this.editLeaveForm.invalid || !this.selectedLeave?.id) return;
+    this.submitting = true;
+    this.successMessage = '';
+    this.errorMessage = '';
+
+    this.leaveService.update(this.selectedLeave.id, this.editLeaveForm.value).subscribe({
+      next: () => {
+        this.submitting = false;
+        this.successMessage = 'Leave request updated successfully!';
+        this.closeDetails();
+        this.loadLeaves();
+        setTimeout(() => (this.successMessage = ''), 4000);
+      },
+      error: (err) => {
+        this.errorMessage = err.error?.message || 'Failed to update leave request.';
+        this.submitting = false;
+      }
+    });
+  }
+
+  deleteLeave(id: number) {
+    if (!confirm('Are you sure you want to delete/cancel this leave request?')) return;
+    this.submitting = true;
+    this.successMessage = '';
+    this.errorMessage = '';
+
+    this.leaveService.delete(id).subscribe({
+      next: () => {
+        this.submitting = false;
+        this.successMessage = 'Leave request deleted successfully!';
+        this.closeDetails();
+        this.loadLeaves();
+        setTimeout(() => (this.successMessage = ''), 4000);
+      },
+      error: (err) => {
+        this.errorMessage = err.error?.message || 'Failed to delete leave request.';
+        this.submitting = false;
+      }
     });
   }
 

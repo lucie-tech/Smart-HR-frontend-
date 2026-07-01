@@ -22,6 +22,11 @@ export class EmployeeService {
     return this.http.put(`${this.baseUrl}/me`, data);
   }
 
+  /** PUT /api/employees/me/password */
+  updateMyPassword(currentPassword: string, newPassword: string): Observable<any> {
+    return this.http.put(`${this.baseUrl}/me/password`, { currentPassword, newPassword });
+  }
+
   /** POST /api/employees/me/photo */
   uploadPhoto(file: File): Observable<any> {
     const fd = new FormData();

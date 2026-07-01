@@ -14,11 +14,15 @@ import { User } from '../../models/employee.model';
 })
 export class ProfileComponent implements OnInit {
   profileForm!: FormGroup;
+  passwordForm!: FormGroup;
   currentUser: User | null = null;
   loading = true;
   saving = false;
+  changingPassword = false;
   successMessage = '';
   errorMessage = '';
+  passwordSuccessMessage = '';
+  passwordErrorMessage = '';
 
   constructor(
     private employeeService: EmployeeService,
@@ -31,7 +35,19 @@ export class ProfileComponent implements OnInit {
       fullName: ['', Validators.required],
       contactInfo: ['']
     });
+
+    this.passwordForm = this.fb.group({
+      currentPassword: ['', Validators.required],
+      newPassword: ['', [Validators.required, Validators.minLength(6)]],
+      confirmPassword: ['', Validators.required]
+    }, { validator: this.passwordMatchValidator });
+
     this.loadProfile();
+  }
+
+  passwordMatchValidator(g: FormGroup) {
+    return g.get('newPassword')?.value === g.get('confirmPassword')?.value
+      ? null : { mismatch: true };
   }
 
   loadProfile() {
@@ -77,7 +93,27 @@ export class ProfileComponent implements OnInit {
     });
   }
 
+  onChangePassword() {
+    if (this.passwordForm.invalid) return;
 
+    this.changingPassword = true;
+    this.passwordSuccessMessage = '';
+    this.passwordErrorMessage = '';
+
+    const { currentPassword, newPassword } = this.passwordForm.value;
+    this.employeeService.updateMyPassword(currentPassword, newPassword).subscribe({
+      next: () => {
+        this.changingPassword = false;
+        this.passwordSuccessMessage = 'Password updated successfully!';
+        this.passwordForm.reset();
+        setTimeout(() => (this.passwordSuccessMessage = ''), 4000);
+      },
+      error: (err) => {
+        this.changingPassword = false;
+        this.passwordErrorMessage = err?.error?.message || 'Failed to update password. Please check your current password.';
+      }
+    });
+  }
 
   getInitial(): string {
     return this.currentUser?.fullName?.charAt(0)?.toUpperCase() || '?';

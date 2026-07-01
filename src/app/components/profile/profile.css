@@ -105,3 +105,13 @@
 @keyframes spin {
   100% { transform: rotate(360deg); }
 }
+
+.edit-column {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.mb-4 {
+  margin-bottom: 1.5rem;
+}

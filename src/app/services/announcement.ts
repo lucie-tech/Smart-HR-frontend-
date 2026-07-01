@@ -44,4 +44,9 @@ export class AnnouncementService {
   delete(id: number): Observable<any> {
     return this.http.delete(`${this.baseUrl}/${id}`);
   }
+
+  /** POST /api/announcements/:id/replies */
+  addReply(id: number, content: string): Observable<Announcement> {
+    return this.http.post<Announcement>(`${this.baseUrl}/${id}/replies`, { content });
+  }
 }

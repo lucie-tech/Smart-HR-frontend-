@@ -43,6 +43,43 @@
     <div class="card-body">
       <h3 class="announcement-title">{{ ann.title }}</h3>
       <p class="announcement-content">{{ ann.content }}</p>
+
+      <!-- Replies Section -->
+      <div class="replies-section">
+        <div class="replies-title" *ngIf="ann.replies && ann.replies.length > 0">
+          Replies ({{ ann.replies.length }})
+        </div>
+        <div class="replies-list" *ngIf="ann.replies && ann.replies.length > 0">
+          <div class="reply-item" *ngFor="let r of ann.replies">
+            <div class="reply-header">
+              <span class="reply-author">{{ r.author?.fullName || 'User' }}</span>
+              <span class="reply-date">{{ r.datePosted | date:'short' }}</span>
+            </div>
+            <div class="reply-content">{{ r.content }}</div>
+          </div>
+        </div>
+
+        <!-- Add Reply Form -->
+        <form class="reply-form" (ngSubmit)="submitReply(ann.id)">
+          <input
+            type="text"
+            placeholder="Write a reply..."
+            class="reply-input"
+            [(ngModel)]="replyContents[ann.id!]"
+            name="reply-{{ ann.id }}"
+            required
+            [disabled]="submittingReply[ann.id!]"
+          />
+          <button
+            type="submit"
+            class="btn-send-reply"
+            [disabled]="!replyContents[ann.id!] || !replyContents[ann.id!].trim() || submittingReply[ann.id!]"
+          >
+            <span class="material-icons" *ngIf="!submittingReply[ann.id!]">send</span>
+            <span class="material-icons spinner" *ngIf="submittingReply[ann.id!]">autorenew</span>
+          </button>
+        </form>
+      </div>
     </div>
   </div>
 </div>

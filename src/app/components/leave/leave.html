@@ -28,6 +28,7 @@
           <option value="ANNUAL">Annual Leave</option>
           <option value="SICK">Sick Leave</option>
           <option value="UNPAID">Unpaid Leave</option>
+          <option value="OTHER">Other</option>
         </select>
       </div>
     </div>
@@ -76,7 +77,7 @@
         <th>Reason</th>
         <th>Applied On</th>
         <th>Status</th>
-        <th *ngIf="isAdmin">Actions</th>
+        <th>Actions</th>
       </tr>
     </thead>
     <tbody>
@@ -93,34 +94,51 @@
         <td><strong>{{ leave.type }}</strong></td>
         <td>{{ leave.startDate | date:'mediumDate' }}</td>
         <td>{{ leave.endDate | date:'mediumDate' }}</td>
-        <td class="reason-cell">{{ leave.reason || '—' }}</td>
+        <td class="reason-cell clickable" (click)="openDetails(leave)" title="Click to read fully">{{ leave.reason || '—' }}</td>
         <td>{{ leave.appliedAt | date:'short' }}</td>
         <td>
           <span class="badge" [ngClass]="getStatusClass(leave.status)">
             {{ leave.status }}
           </span>
         </td>
-        <td *ngIf="isAdmin">
-          <div class="action-btns" *ngIf="leave.status === 'PENDING'; else processed">
-            <button
-              class="btn-action approve"
-              [disabled]="processing === leave.id"
-              (click)="processLeave(leave.id!, 'APPROVED')">
-              <span class="material-icons">check</span> Approve
+        <td>
+          <div class="action-btns">
+            <!-- View Button (All Roles) -->
+            <button class="btn-action view" (click)="openDetails(leave)" title="View Details">
+              <span class="material-icons">visibility</span> View
             </button>
-            <button
-              class="btn-action reject"
-              [disabled]="processing === leave.id"
-              (click)="processLeave(leave.id!, 'REJECTED')">
-              <span class="material-icons">close</span> Reject
-            </button>
+
+            <!-- Admin Actions (Approve / Reject) -->
+            <ng-container *ngIf="isAdmin">
+              <button
+                *ngIf="leave.status === 'PENDING'"
+                class="btn-action approve"
+                [disabled]="processing === leave.id"
+                (click)="processLeave(leave.id!, 'APPROVED')">
+                <span class="material-icons">check</span> Approve
+              </button>
+              <button
+                *ngIf="leave.status === 'PENDING'"
+                class="btn-action reject"
+                [disabled]="processing === leave.id"
+                (click)="processLeave(leave.id!, 'REJECTED')">
+                <span class="material-icons">close</span> Reject
+              </button>
+              <span class="processed-by" *ngIf="leave.status !== 'PENDING' && leave.processedByName">
+                by {{ leave.processedByName }}
+              </span>
+            </ng-container>
+
+            <!-- Employee Actions (Edit / Delete) -->
+            <ng-container *ngIf="!isAdmin && leave.status === 'PENDING'">
+              <button class="btn-action edit" (click)="openDetails(leave); startEdit()" title="Edit Leave">
+                <span class="material-icons">edit</span> Edit
+              </button>
+              <button class="btn-action reject" (click)="deleteLeave(leave.id!)" title="Cancel/Delete Leave">
+                <span class="material-icons">delete</span> Delete
+              </button>
+            </ng-container>
           </div>
-          <ng-template #processed>
-            <span class="processed-by" *ngIf="leave.processedByName">
-              by {{ leave.processedByName }}
-            </span>
-            <span *ngIf="!leave.processedByName">—</span>
-          </ng-template>
         </td>
       </tr>
     </tbody>
@@ -129,5 +147,97 @@
   <div class="empty-state p-4" *ngIf="!loading && leaves.length === 0">
     <span class="material-icons" style="font-size: 3rem; color: var(--gray-300);">flight_takeoff</span>
     <p>{{ isAdmin ? 'No leave requests found.' : "You haven't applied for any leaves yet." }}</p>
+  </div>
+</div>
+
+<!-- Leave Details & Edit Modal Overlay -->
+<div class="modal-overlay animate-fade-in" *ngIf="selectedLeave" (click)="closeDetails()">
+  <div class="modal-card" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h3>{{ isEditing ? 'Edit Leave Request' : 'Leave Request Details' }}</h3>
+      <button class="btn-icon modal-close" (click)="closeDetails()">
+        <span class="material-icons">close</span>
+      </button>
+    </div>
+
+    <!-- View details mode inside Modal -->
+    <div class="modal-body" *ngIf="!isEditing">
+      <div class="details-grid">
+        <div class="detail-item" *ngIf="isAdmin">
+          <span class="detail-label">Employee</span>
+          <span class="detail-value">{{ selectedLeave.employeeName }} (ID: {{ selectedLeave.employeeId }})</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Leave Type</span>
+          <span class="detail-value"><strong>{{ selectedLeave.type }}</strong></span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Duration</span>
+          <span class="detail-value">{{ selectedLeave.startDate | date:'mediumDate' }} to {{ selectedLeave.endDate | date:'mediumDate' }}</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Applied On</span>
+          <span class="detail-value">{{ selectedLeave.appliedAt | date:'medium' }}</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Status</span>
+          <span class="badge" [ngClass]="getStatusClass(selectedLeave.status)">{{ selectedLeave.status }}</span>
+        </div>
+        <div class="detail-item">
+          <span class="detail-label">Reason</span>
+          <div class="detail-reason-box">{{ selectedLeave.reason || 'No reason provided.' }}</div>
+        </div>
+        <div class="detail-item" *ngIf="selectedLeave.status !== 'PENDING' && selectedLeave.processedByName">
+          <span class="detail-label">Processed By</span>
+          <span class="detail-value">{{ selectedLeave.processedByName }}</span>
+        </div>
+      </div>
+
+      <div class="modal-actions" *ngIf="!isAdmin && selectedLeave.status === 'PENDING'">
+        <button class="btn btn-secondary" (click)="startEdit()">
+          <span class="material-icons">edit</span> Edit Request
+        </button>
+        <button class="btn btn-danger" (click)="deleteLeave(selectedLeave.id!)">
+          <span class="material-icons">delete</span> Cancel/Delete Request
+        </button>
+      </div>
+    </div>
+
+    <!-- Edit Form mode inside Modal -->
+    <form [formGroup]="editLeaveForm" (ngSubmit)="saveEdit()" class="modal-body" *ngIf="isEditing">
+      <div class="form-group">
+        <label>Leave Type</label>
+        <select formControlName="type" class="form-control">
+          <option value="ANNUAL">Annual Leave</option>
+          <option value="SICK">Sick Leave</option>
+          <option value="UNPAID">Unpaid Leave</option>
+          <option value="OTHER">Other</option>
+        </select>
+      </div>
+
+      <div class="form-row">
+        <div class="form-group flex-1">
+          <label>Start Date</label>
+          <input type="date" formControlName="startDate" class="form-control" />
+        </div>
+        <div class="form-group flex-1">
+          <label>End Date</label>
+          <input type="date" formControlName="endDate" class="form-control" />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Reason</label>
+        <textarea formControlName="reason" class="form-control" rows="4"></textarea>
+      </div>
+
+      <div class="modal-actions">
+        <button type="button" class="btn btn-secondary" (click)="cancelEdit()">Cancel</button>
+        <button type="submit" class="btn btn-primary" [disabled]="editLeaveForm.invalid || submitting">
+          <span *ngIf="submitting" class="spinner material-icons">autorenew</span>
+          <span *ngIf="!submitting">Save Changes</span>
+        </button>
+      </div>
+    </form>
   </div>
 </div>

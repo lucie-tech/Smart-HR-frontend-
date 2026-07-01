@@ -32,4 +32,14 @@ export class LeaveService {
     const params = new HttpParams().set('status', status);
     return this.http.put(`${this.baseUrl}/${id}/process`, null, { params });
   }
+
+  /** PUT /api/leaves/:id */
+  update(id: number, data: { type: string; startDate: string; endDate: string; reason: string }): Observable<any> {
+    return this.http.put(`${this.baseUrl}/${id}`, data);
+  }
+
+  /** DELETE /api/leaves/:id */
+  delete(id: number): Observable<any> {
+    return this.http.delete(`${this.baseUrl}/${id}`);
+  }
 }

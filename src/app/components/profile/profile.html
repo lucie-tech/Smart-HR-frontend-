@@ -49,37 +49,82 @@
 
   </div>
 
-  <!-- Right Side: Edit Form -->
-  <div class="card edit-card">
-    <div class="card-header">
-      <h3>Edit Personal Information</h3>
+  <!-- Right Side: Edit Form & Change Password -->
+  <div class="edit-column">
+    <!-- Edit Personal Information -->
+    <div class="card edit-card">
+      <div class="card-header">
+        <h3>Edit Personal Information</h3>
+      </div>
+      <div class="card-body">
+        <div *ngIf="successMessage" class="alert alert-success animate-fade-in">
+          <span class="material-icons">check_circle</span>
+          {{ successMessage }}
+        </div>
+        <div *ngIf="errorMessage" class="alert alert-danger animate-fade-in">
+          <span class="material-icons">error</span>
+          {{ errorMessage }}
+        </div>
+
+        <form [formGroup]="profileForm" (ngSubmit)="onSubmit()">
+          <div class="form-group">
+            <label>Full Name</label>
+            <input type="text" formControlName="fullName" class="form-control" />
+          </div>
+
+          <div class="form-group">
+            <label>Contact Info (Phone, Address, etc.)</label>
+            <textarea formControlName="contactInfo" class="form-control" rows="3"></textarea>
+          </div>
+
+          <button type="submit" class="btn btn-primary" [disabled]="profileForm.invalid || saving">
+            <span *ngIf="saving" class="spinner material-icons">autorenew</span>
+            <span *ngIf="!saving">Save Changes</span>
+          </button>
+        </form>
+      </div>
     </div>
-    <div class="card-body">
-      <div *ngIf="successMessage" class="alert alert-success animate-fade-in">
-        <span class="material-icons">check_circle</span>
-        {{ successMessage }}
-      </div>
-      <div *ngIf="errorMessage" class="alert alert-danger animate-fade-in">
-        <span class="material-icons">error</span>
-        {{ errorMessage }}
-      </div>
 
-      <form [formGroup]="profileForm" (ngSubmit)="onSubmit()">
-        <div class="form-group">
-          <label>Full Name</label>
-          <input type="text" formControlName="fullName" class="form-control" />
+    <!-- Change Password -->
+    <div class="card edit-card">
+      <div class="card-header">
+        <h3>Change Password</h3>
+      </div>
+      <div class="card-body">
+        <div *ngIf="passwordSuccessMessage" class="alert alert-success animate-fade-in">
+          <span class="material-icons">check_circle</span>
+          {{ passwordSuccessMessage }}
+        </div>
+        <div *ngIf="passwordErrorMessage" class="alert alert-danger animate-fade-in">
+          <span class="material-icons">error</span>
+          {{ passwordErrorMessage }}
         </div>
 
-        <div class="form-group">
-          <label>Contact Info (Phone, Address, etc.)</label>
-          <textarea formControlName="contactInfo" class="form-control" rows="3"></textarea>
-        </div>
+        <form [formGroup]="passwordForm" (ngSubmit)="onChangePassword()">
+          <div class="form-group">
+            <label>Current Password</label>
+            <input type="password" formControlName="currentPassword" class="form-control" placeholder="Enter current password" />
+          </div>
 
-        <button type="submit" class="btn btn-primary" [disabled]="profileForm.invalid || saving">
-          <span *ngIf="saving" class="spinner material-icons">autorenew</span>
-          <span *ngIf="!saving">Save Changes</span>
-        </button>
-      </form>
+          <div class="form-group">
+            <label>New Password (min 6 characters)</label>
+            <input type="password" formControlName="newPassword" class="form-control" placeholder="Enter new password" />
+          </div>
+
+          <div class="form-group">
+            <label>Confirm New Password</label>
+            <input type="password" formControlName="confirmPassword" class="form-control" placeholder="Confirm new password" />
+            <div *ngIf="passwordForm.errors?.['mismatch'] && passwordForm.get('confirmPassword')?.touched" class="text-danger mt-1" style="font-size: 0.8rem;">
+              Passwords do not match.
+            </div>
+          </div>
+
+          <button type="submit" class="btn btn-primary" [disabled]="passwordForm.invalid || changingPassword">
+            <span *ngIf="changingPassword" class="spinner material-icons">autorenew</span>
+            <span *ngIf="!changingPassword">Update Password</span>
+          </button>
+        </form>
+      </div>
     </div>
   </div>
 </div>
